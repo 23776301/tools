@@ -1,0 +1,13 @@
+# Binary
+pidfd-watchdog
+
+# Logs
+*.log
+*.log.zst
+
+# Build artifacts
+*.o
+*.d
+
+# PID files
+*.pid
