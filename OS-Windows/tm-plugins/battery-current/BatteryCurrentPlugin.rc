@@ -1,0 +1,39 @@
+#include <winres.h>
+#include "resource.h"
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+IDD_CONFIG DIALOGEX 0, 0, 372, 332
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "电池电流 / 功率 插件设置"
+FONT 9, "Microsoft YaHei"
+BEGIN
+    LTEXT           "显示内容：", IDC_STATIC, 12, 16, 64, 14
+    COMBOBOX        IDC_QUANTITY, 92, 12, 120, 80, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "电流单位：", IDC_STATIC, 232, 16, 56, 14
+    COMBOBOX        IDC_CUNIT, 292, 12, 64, 80, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+
+    LTEXT           "功率单位：", IDC_STATIC, 12, 44, 64, 14
+    COMBOBOX        IDC_PUNIT, 92, 40, 120, 80, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "小数位数：", IDC_STATIC, 232, 44, 56, 14
+    COMBOBOX        IDC_DECIMALS, 292, 40, 64, 80, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+
+    LTEXT           "符号显示：", IDC_STATIC, 12, 72, 64, 14
+    COMBOBOX        IDC_SIGN, 92, 68, 120, 80, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "无数据时：", IDC_STATIC, 232, 72, 56, 14
+    COMBOBOX        IDC_NODATA, 292, 68, 64, 80, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+
+    LTEXT           "标签文本：", IDC_STATIC, 12, 100, 64, 14
+    EDITTEXT        IDC_LABEL, 92, 96, 264, 20, ES_AUTOHSCROLL | WS_BORDER | WS_TABSTOP
+
+    LTEXT           "电压来源：", IDC_STATIC, 12, 128, 64, 14
+    COMBOBOX        IDC_VSRC, 92, 124, 120, 80, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+
+    LTEXT           "固定电压(mV)：", IDC_STATIC, 232, 128, 76, 14
+    EDITTEXT        IDC_VFIX, 312, 124, 48, 20, ES_AUTOHSCROLL | ES_NUMBER | WS_BORDER | WS_TABSTOP
+
+    LTEXT           "提示：电池项的刷新频率完全跟随 TrafficMonitor 主程序的“常规设置 → 刷新频率”（monitor_time_span），不在插件内单独定义。调整主程序刷新频率即可同时改变所有项（含本插件）的刷新速度。", IDC_STATIC, 12, 250, 348, 48
+
+    DEFPUSHBUTTON   "确定", IDOK, 212, 304, 70, 22
+    PUSHBUTTON      "取消", IDCANCEL, 290, 304, 70, 22
+END
