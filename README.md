@@ -29,6 +29,7 @@ OpenCode 会话历史查看器，快速查看和进入历史会话。
 sss           # 列出最近10个会话
 sss -c 3      # 列出3个会话
 sss in 0      # 进入最新会话
+sss 0      # 为最新会话生成 HTML 审计报告
 ```
 
 **依赖：** Python 3、opencode

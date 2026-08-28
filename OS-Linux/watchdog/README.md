@@ -21,7 +21,7 @@
 ```bash
 # 克隆仓库
 git clone https://github.com/23776301/tools.git
-cd tools/watchdog
+cd tools/OS-Linux/watchdog
 
 # 一键编译部署验证
 bash build-deploy.sh
