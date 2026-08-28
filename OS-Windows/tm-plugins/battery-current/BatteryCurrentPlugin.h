@@ -15,6 +15,7 @@ struct PluginConfig
     std::wstring label = L"电池"; // 标签文本
     int voltageSource = 0;   // 0=实时电压(WMI), 1=固定电压
     int fixedVoltage = 12000;// 固定电压(mV)，当 voltageSource==1 时生效
+    int graphMax = 50000;     // 历史曲线满量程(mW)，用于把电流/功率归一化到 0.0~1.0
 };
 
 // 电池放电电流/功率显示项
@@ -34,13 +35,21 @@ public:
     // 默认逻辑，与内置的网速/CPU/显卡项走同一条路径，最稳定。
     virtual bool IsCustomDraw() const override { return false; }
 
+    // 任务栏资源占用图（历史曲线）支持：返回 1 让主程序绘制最近数值曲线，
+    // GetResourceUsageGraphValue 返回归一化到 0.0~1.0 的图表值，由主程序维护环形缓冲。
+    virtual int IsDrawResourceUsageGraph() const override { return 1; }
+    virtual float GetResourceUsageGraphValue() const override { return m_graphVal; }
+
     // 由插件更新显示值/标签
     void SetValue(const std::wstring& v);
     void SetLabel(const std::wstring& l);
+    // 由插件更新任务栏历史曲线值(0.0~1.0)
+    void SetGraphValue(float v) { m_graphVal = v; }
 
 private:
     std::wstring m_valueText;   // 实际显示的数值文本
     std::wstring m_labelText;   // 标签文本
+    float m_graphVal = 0.0f;    // 任务栏历史曲线的归一化值(0.0~1.0)，由 DataRequired 写入
 };
 
 // 插件主体

@@ -215,6 +215,7 @@ void CBatteryCurrentPlugin::LoadConfig()
     m_cfg.noData        = GetPrivateProfileIntW(L"Settings", L"NoData", 0, p.c_str());
     m_cfg.voltageSource = GetPrivateProfileIntW(L"Settings", L"VoltageSource", 0, p.c_str());
     m_cfg.fixedVoltage  = GetPrivateProfileIntW(L"Settings", L"FixedVoltage", 12000, p.c_str());
+    m_cfg.graphMax      = GetPrivateProfileIntW(L"Settings", L"GraphMax", 50000, p.c_str());
 
     wchar_t buf[128] = { 0 };
     GetPrivateProfileStringW(L"Settings", L"Label", L"电池", buf, 128, p.c_str());
@@ -229,6 +230,7 @@ void CBatteryCurrentPlugin::LoadConfig()
     if (m_cfg.noData < 0 || m_cfg.noData > 1) m_cfg.noData = 0;
     if (m_cfg.voltageSource < 0 || m_cfg.voltageSource > 1) m_cfg.voltageSource = 0;
     if (m_cfg.fixedVoltage < 1000 || m_cfg.fixedVoltage > 25000) m_cfg.fixedVoltage = 12000;
+    if (m_cfg.graphMax < 1000 || m_cfg.graphMax > 1000000) m_cfg.graphMax = 50000;
 
     m_item.SetLabel(m_cfg.label.empty() ? L"电池" : m_cfg.label);
 
@@ -266,6 +268,7 @@ void CBatteryCurrentPlugin::SaveConfig()
     w(L"NoData", m_cfg.noData);
     w(L"VoltageSource", m_cfg.voltageSource);
     w(L"FixedVoltage", m_cfg.fixedVoltage);
+    w(L"GraphMax", m_cfg.graphMax);
     WritePrivateProfileStringW(L"Settings", L"Label",
                                m_cfg.label.empty() ? L"电池" : m_cfg.label.c_str(), p.c_str());
 }
@@ -365,6 +368,7 @@ void CBatteryCurrentPlugin::DataRequired()
         m_lastValue = s;
         m_haveLast = true;
         m_item.SetValue(s);
+        m_item.SetGraphValue(0.0f);   // 零功率稳态：曲线归零
         LogLine(s.c_str());
         return;
     }
@@ -435,6 +439,13 @@ void CBatteryCurrentPlugin::DataRequired()
     s += GetUnitSuffix();
     m_item.SetValue(s);
         LogLine(s.c_str());
+
+    // 历史曲线值：以功率(mW)绝对值归一化到 0.0~1.0（量与单位无关，物理意义统一）。
+    // graphMax 是图表满量程(mW)，可在 INI 的 [Settings] GraphMax 调整（默认 50000=50W）。
+    if (mag_mW >= m_cfg.graphMax)
+        m_item.SetGraphValue(1.0f);
+    else
+        m_item.SetGraphValue((float)((double)mag_mW / (double)m_cfg.graphMax));
     } // 本次 DataRequired 读取结束
 }
 
@@ -446,7 +457,7 @@ const wchar_t* CBatteryCurrentPlugin::GetInfo(PluginInfoIndex index)
     case TMI_DESCRIPTION: return L"读取电池放电/充电电流(mA/A)或功率(W/mW)：以内核电源状态判定方向，负值放电、正值充电。刷新完全跟随 TrafficMonitor 全局设置，热路径仅内核调用、电压 WMI 节流，任务栏刷新与内置项同节拍。可在插件设置中配置单位、小数、符号等。";
     case TMI_AUTHOR:      return L"WorkBuddy";
     case TMI_COPYRIGHT:   return L"(C) WorkBuddy";
-    case TMI_VERSION:     return L"1.4";
+    case TMI_VERSION:     return L"1.5";
     case TMI_URL:         return L"https://github.com/zhongyang219/TrafficMonitor";
     default:              return L"";
     }

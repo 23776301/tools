@@ -4,7 +4,7 @@ TrafficMonitor 插件归档目录。后续开发的各类 TrafficMonitor 插件�
 
 ## 目录结构
 
-- `battery-current/` — 电池放电电流 / 充电功率显示插件（非自绘版）
+- `battery-current/` — 电池放电电流 / 充电功率显示插件（v1.5：支持任务栏历史占用曲线，单文件零依赖，已附编译好的 `BatteryCurrentPlugin.dll`）
 
 ## 编译说明（battery-current）
 
@@ -38,4 +38,13 @@ g++ -shared -std=c++17 -O2 -static -DBUILDING_DLL \
 | `RefreshMs`  | 应用层读取间隔(ms) | 默认 500 |
 | `VoltageSource` | 电压来源 | 见源码注释 |
 | `FixedVoltage`  | 固定电压(mV) | 默认 12000 |
+| `GraphMax`   | 历史曲线满量程(mW) | 默认 50000（=50W），把电流/功率归一化到 0.0~1.0 绘制任务栏曲线，可调小让起伏更明显 |
 | `DebugLog`   | 诊断日志开关 | 0/1 |
+
+## 历史占用曲线（任务栏悬浮窗）
+
+v1.5 起重写了插件接口的 `IsDrawResourceUsageGraph()`（返回 1）与 `GetResourceUsageGraphValue()`
+（返回 0.0~1.0 的归一化值，按 `|功率(mW)| / GraphMax` 计算，零功率稳态归零），由 TrafficMonitor
+主程序负责维护环形缓冲并绘制最近使用率曲线，与 CPU 占用率曲线行为一致。
+
+在 TrafficMonitor 的「显示设置 → 任务栏窗口」中勾选该插件的「绘制历史曲线」即可。
